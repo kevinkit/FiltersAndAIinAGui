@@ -13,8 +13,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-INCLUDEPATH += G:\OpenCV\opencv\build\include
-LIBS += G:\OpenCV\opencv\build\bin\opencv_videoio_ffmpeg430_64.dll
+INCLUDEPATH += G:\mingwOpenCV\mingwOpenCV\include
+LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_core411.dll
+LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_highgui411.dll
+LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_imgcodecs411.dll
+LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_imgproc411.dll
+LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_features2d411.dll
+LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_calib3d411.dll
+
 SOURCES += \
         main.cpp
 
@@ -30,3 +36,4 @@ QML_DESIGNER_IMPORT_PATH =
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
