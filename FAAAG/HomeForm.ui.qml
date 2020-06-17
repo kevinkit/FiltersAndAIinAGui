@@ -30,8 +30,31 @@ Page {
 
     ComboBox {
         id: comboBox
+        currentIndex: 1
         x: 74
         y: 162
+        clip: false
+        flat: false
+        font.family: "Arial"
+        focusPolicy: Qt.TabFocus
+        enabled: true
+        rotation: 0
+        wheelEnabled: true
+        displayText: "Choose a filter"
+        editable: false
+        textRole: "filter"
+
+        //Filters should be done in enums
+        model: ListModel {
+            ListElement { filter: "Laplace"; value: 0 }
+            ListElement { filter: "Gaussian Blur"; value: 1 }
+            ListElement { filter: "Median Blur"; value: 2 }
+        }
+        Connections {
+            target: comboBox
+            onClicked: print("clicked")
+        }
+
     }
 
     ComboBox {
