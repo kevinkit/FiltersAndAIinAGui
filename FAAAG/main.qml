@@ -4,8 +4,8 @@ import QtQuick.Controls 2.15
 ApplicationWindow {
     id: window
     visible: true
-    width: 640
-    height: 480
+    width: 1920
+    height: 1080
     title: qsTr("Stack")
 
     header: ToolBar {
@@ -59,6 +59,8 @@ ApplicationWindow {
 
     StackView {
         id: stackView
+        width: 1920
+        height: 1080
         initialItem: "HomeForm.ui.qml"
         anchors.fill: parent
     }

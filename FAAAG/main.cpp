@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -13,6 +14,8 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("applicationDirPath", QGuiApplication::applicationDirPath());
+
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
@@ -20,7 +23,7 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
 
-
+/*
    cv::Mat image = cv::imread("../1.png", 1);
    if(! image.data )                              // Check for invalid input
    {
@@ -31,6 +34,7 @@ int main(int argc, char *argv[])
    cv::imshow("My Image", image);
    cv::waitKey(0);
 
+*/
     engine.load(url);
     return app.exec();
 }
