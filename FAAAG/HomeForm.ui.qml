@@ -10,7 +10,7 @@ Page {
     Label {
         width: 356
         height: 44
-        text: qsTr("You are on the homeasd")
+        text: qsTr("You are on the filter side")
         anchors.verticalCenterOffset: -467
         anchors.horizontalCenterOffset: -519
         anchors.centerIn: parent
@@ -24,8 +24,12 @@ Page {
         height: 670
         source: "image://live/image"
         fillMode: Image.PreserveAspectFit
-        //fillMode: Image.PreserveAspectFit
 
+
+        function reload() {
+          counter = !counter
+          source = "image://live/image?id=" + counter
+        }
     }
 
     ComboBox {
@@ -40,7 +44,7 @@ Page {
         enabled: true
         rotation: 0
         wheelEnabled: true
-        //        displayText: "Choose a filter"
+
         editable: false
         textRole: "filter"
 
@@ -48,25 +52,26 @@ Page {
         model: ListModel {
             id: list
             ListElement {
-                filter: "Laplace"
+                filter: "No filter"
                 value: 0
             }
             ListElement {
-                filter: "Gaussian Blur"
+                filter: "Laplace"
                 value: 1
             }
             ListElement {
-                filter: "Median Blur"
+                filter: "Gaussian Blur"
                 value: 2
+            }
+            ListElement {
+                filter: "Median Blur"
+                value: 3
             }
         }
 
-        onActivated: Filters.currentFilter = currentText
-
-        Connections {
-            target: comboBox
-            onClicked: print("clicked")
-        }
+        onActivated: {Filters.currentFilter = currentText
+                      Filters.index = currentIndex
+                     }
     }
 
     ComboBox {

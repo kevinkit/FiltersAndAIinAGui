@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
     FilterImage filters;
     engine.rootContext()->setContextProperty("Filters",&filters);
     engine.addImageProvider("live",&filters);
+
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
