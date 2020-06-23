@@ -1,4 +1,5 @@
-QT += quick core gui
+QT += quick core gui \
+    widgets
 
 CONFIG += c++11
 
@@ -22,6 +23,7 @@ LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_features2d411.dll
 LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_calib3d411.dll
 
 SOURCES += \
+        filterimage.cpp \
         main.cpp
 
 RESOURCES += qml.qrc
@@ -36,4 +38,7 @@ QML_DESIGNER_IMPORT_PATH =
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+HEADERS += \
+    filterimage.h
 

@@ -4,9 +4,8 @@ import QtQuick.Controls 2.15
 Page {
     width: 1920
     height: 1080
+    title: "Welcome to the filter chooser"
     transformOrigin: Item.Top
-
-    title: qsTr("Home")
 
     Label {
         width: 356
@@ -23,14 +22,15 @@ Page {
         y: 162
         width: 1352
         height: 670
-        source: "images/images/1.png"
-        fillMode: Image.Tile
+        source: "image://live/image"
+        fillMode: Image.PreserveAspectFit
         //fillMode: Image.PreserveAspectFit
+
     }
 
     ComboBox {
         id: comboBox
-        currentIndex: 1
+        currentIndex: 0
         x: 74
         y: 162
         clip: false
@@ -40,21 +40,33 @@ Page {
         enabled: true
         rotation: 0
         wheelEnabled: true
-        displayText: "Choose a filter"
+        //        displayText: "Choose a filter"
         editable: false
         textRole: "filter"
 
         //Filters should be done in enums
         model: ListModel {
-            ListElement { filter: "Laplace"; value: 0 }
-            ListElement { filter: "Gaussian Blur"; value: 1 }
-            ListElement { filter: "Median Blur"; value: 2 }
+            id: list
+            ListElement {
+                filter: "Laplace"
+                value: 0
+            }
+            ListElement {
+                filter: "Gaussian Blur"
+                value: 1
+            }
+            ListElement {
+                filter: "Median Blur"
+                value: 2
+            }
         }
+
+        onActivated: Filters.currentFilter = currentText
+
         Connections {
             target: comboBox
             onClicked: print("clicked")
         }
-
     }
 
     ComboBox {
@@ -69,3 +81,4 @@ Designer {
     D{i:0;formeditorZoom:0.6600000262260437}
 }
 ##^##*/
+
