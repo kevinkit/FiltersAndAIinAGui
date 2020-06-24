@@ -51,13 +51,16 @@ private:
 
 
 
-    QImage no_image;
+    //QImage no_image;
     QImage orig_image;
+
     QString m_currentFilter;
     int m_currentFilterIndx;
     QImage current_image;
+
     cv::Mat current_cv_image;
     cv::Mat current_cv_image_gray;
+    cv::Mat orig_image_cv;
 };
 
 #endif // FILTERIMAGE_H

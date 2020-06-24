@@ -5,10 +5,7 @@ Page {
     width: 1920
     height: 1080
 
-    title: qsTr("Page 2")
+    title: qsTr("Deep Learning Models")
 
-    Label {
-        text: qsTr("You are on Page 2.")
-        anchors.centerIn: parent
-    }
+
 }

@@ -15,10 +15,15 @@ Page {
     Label {
         width: 356
         height: 44
-        text: qsTr("You are on the filter side")
-        anchors.verticalCenterOffset: -467
-        anchors.horizontalCenterOffset: -519
+        text: qsTr("Choose a filter ")
+        anchors.verticalCenterOffset: -395
+        anchors.horizontalCenterOffset: -708
         anchors.centerIn: parent
+    }
+
+    Button{
+        id: loadButton
+        text: "load image"
     }
 
     ImageItem {
@@ -55,11 +60,11 @@ Page {
                 value: 0
             }
             ListElement {
-                filter: "Laplace"
+                filter: "Sobel on Grayscale"
                 value: 1
             }
             ListElement {
-                filter: "Gaussian Blur"
+                filter: "Gaussian Blur on Grayscale"
                 value: 2
             }
             ListElement {

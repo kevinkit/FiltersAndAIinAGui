@@ -5,6 +5,9 @@ FilterImage::FilterImage(QQuickItem *parent) : QQuickPaintedItem(parent)
 {
     this->current_image = QImage("file:/../../1.png");
     this->current_cv_image = cv::imread("./../1.png");
+
+    this->orig_image = QImage("file:/../../1.png");
+    this->orig_image_cv = cv::imread("./../1.png");
     cv::cvtColor(cv::imread("./../1.png"),this->current_cv_image_gray,cv::COLOR_BGR2GRAY);
 
     this->m_currentFilterIndx = 0;
@@ -84,22 +87,31 @@ void FilterImage::executeFiltering(){
     cv::Mat src_gray,dst,abs_dst,temp;
 
     switch(this->m_currentFilterIndx){
-        case 0: qDebug() << "just did the 0 thing"; break;
+        case 0: this->setImage(this->orig_image); qDebug() << "just did the 0 thing"; break;
         case 1: {
                     cv::Sobel(this->current_cv_image_gray,dst,CV_16S,0,1,3,cv::BORDER_DEFAULT);
                     cv::convertScaleAbs(dst,abs_dst);
                     cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
-
-                    //convert back to qimage
-                    qDebug() << "here" << temp.depth();
                     QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
-
                     this->setImage(dest);
-
                     break;
                 }
 
-        case 2: break;
-        case 3: break;
+        case 2:{
+                cv::GaussianBlur(this->current_cv_image_gray,dst,cv::Size(3,3),0,0);
+                cv::convertScaleAbs(dst,abs_dst);
+                cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
+                QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
+                this->setImage(dest);
+                 break;
+                }
+        case 3: {
+                cv::medianBlur(this->current_cv_image_gray,dst,3);
+                cv::convertScaleAbs(dst,abs_dst);
+                cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
+                QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
+                this->setImage(dest);
+                 break;
+                }
     }
 }

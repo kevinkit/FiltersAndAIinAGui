@@ -40,7 +40,7 @@ ApplicationWindow {
             anchors.fill: parent
 
             ItemDelegate {
-                text: qsTr("Page 1")
+                text: qsTr("Live View")
                 width: parent.width
                 onClicked: {
                     stackView.push("Page1Form.ui.qml")
@@ -48,7 +48,7 @@ ApplicationWindow {
                 }
             }
             ItemDelegate {
-                text: qsTr("Page 2")
+                text: qsTr("Deep Learning Models")
                 width: parent.width
                 onClicked: {
                     stackView.push("Page2Form.ui.qml")
