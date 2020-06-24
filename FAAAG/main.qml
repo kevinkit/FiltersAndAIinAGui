@@ -1,5 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import Filters 1.0
 
 ApplicationWindow {
     id: window
@@ -57,6 +58,7 @@ ApplicationWindow {
         }
     }
 
+
     StackView {
         id: stackView
         width: 1920
@@ -64,4 +66,13 @@ ApplicationWindow {
         initialItem: "HomeForm.ui.qml"
         anchors.fill: parent
     }
+
+
+    HomeForm{
+        comboBox.onActivated: { imageItem.currentFilter = comboBox.currentText
+                                imageItem.index = comboBox.currentIndex
+                                //imageItem.executeFiltering()
+        }
+    }
+
 }

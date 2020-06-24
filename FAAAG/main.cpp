@@ -16,9 +16,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("applicationDirPath", QGuiApplication::applicationDirPath());
 
-    FilterImage filters;
-    engine.rootContext()->setContextProperty("Filters",&filters);
-    engine.addImageProvider("live",&filters);
+    qmlRegisterType<FilterImage>("Filters", 1, 0, "ImageItem");
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

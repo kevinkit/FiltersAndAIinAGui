@@ -1,9 +1,14 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-
+import Filters 1.0
 Page {
+
+    visible: true
     width: 1920
     height: 1080
+    property alias comboBox1: comboBox1
+    property alias comboBox: comboBox
+    property alias imageItem: imageItem
     title: "Welcome to the filter chooser"
     transformOrigin: Item.Top
 
@@ -16,20 +21,14 @@ Page {
         anchors.centerIn: parent
     }
 
-    Image {
-        id: image
-        x: 254
-        y: 162
-        width: 1352
-        height: 670
-        source: "image://live/image"
-        fillMode: Image.PreserveAspectFit
-
-
-        function reload() {
-          counter = !counter
-          source = "image://live/image?id=" + counter
-        }
+    ImageItem {
+        id: imageItem
+        x: 220
+        y: 200
+        width: parent.width
+        height: parent.height
+        visible: true
+        anchors.fill: parent
     }
 
     ComboBox {
@@ -68,10 +67,6 @@ Page {
                 value: 3
             }
         }
-
-        onActivated: {Filters.currentFilter = currentText
-                      Filters.index = currentIndex
-                     }
     }
 
     ComboBox {
@@ -83,7 +78,6 @@ Page {
 
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:0.6600000262260437}
+    D{i:0;autoSize:true;height:480;width:640}
 }
 ##^##*/
-
