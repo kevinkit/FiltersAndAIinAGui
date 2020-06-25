@@ -73,6 +73,20 @@ ApplicationWindow {
                                 imageItem.index = comboBox.currentIndex
                                 //imageItem.executeFiltering()
         }
+
+        fileDialog.onAccepted: {
+            console.log("You chose: " + fileDialog.fileUrls)
+            //Qt.quit()
+            imageItem.updateImage(fileDialog.fileUrls)
+        }
+        fileDialog.onRejected: {
+            console.log("Canceled")
+        }
+
+        loadButton {
+            onClicked: fileDialog.visible = true
+        }
+
     }
 
 }

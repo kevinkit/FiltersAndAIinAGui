@@ -10,6 +10,7 @@
 #include <QQuickItem>
 #include <QPainter>
 #include <QImage>
+#include <QImageReader>
 #include <QDebug>
 #include <QBuffer>
 #include <opencv2/core/core.hpp>
@@ -30,6 +31,7 @@ class FilterImage : public QQuickPaintedItem
 public:
     explicit FilterImage(QQuickItem *parent = nullptr);
 
+    //TODO: should maybe put into slots? not sure atm
     Q_INVOKABLE void setImage(const QImage &image);
     Q_INVOKABLE void paint(QPainter *painter) override;
 
@@ -42,6 +44,7 @@ public:
 public slots:
     void setFilter(const QString &currentFilter);
     void setIndex(int idx);
+    void updateImage(const QString filename);
 
 signals:
     void filterChanged();
@@ -50,7 +53,7 @@ signals:
 private:
 
 
-
+    QString filename;
     //QImage no_image;
     QImage orig_image;
 

@@ -1,5 +1,5 @@
 #include "filterimage.h"
-
+#include <QFileInfo>
 
 FilterImage::FilterImage(QQuickItem *parent) : QQuickPaintedItem(parent)
 {
@@ -12,6 +12,7 @@ FilterImage::FilterImage(QQuickItem *parent) : QQuickPaintedItem(parent)
 
     this->m_currentFilterIndx = 0;
 }
+
 QString FilterImage::currentFilter()
 {
     return this->m_currentFilter;
@@ -32,6 +33,8 @@ void FilterImage::paint(QPainter *painter)
     painter->drawImage(center, scaled);
     qDebug() << "drawn!";
 }
+
+
 
 QImage FilterImage::image() const
 {
@@ -61,6 +64,22 @@ void FilterImage::setIndex(int idx)
     executeFiltering();
     emit indexChanged();
 }
+
+void FilterImage::updateImage(const QString filename)
+{
+    QString adapted = filename.mid(8);
+    QImageReader reader(adapted);
+    QImage new_image = reader.read();
+    this->current_cv_image = cv::imread(adapted.toUtf8().constData());
+    cv::cvtColor(this->current_cv_image,this->current_cv_image_gray,cv::COLOR_BGR2GRAY);
+    cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
+    cv::imshow( "Display window", this->current_cv_image_gray );                   // Show our image inside it.
+
+    cv::waitKey(0);
+    this->orig_image = new_image.copy();
+    this->setImage(new_image.copy());
+}
+
 
 void FilterImage::setFilter(const QString &currentFilter)
 {
@@ -93,7 +112,7 @@ void FilterImage::executeFiltering(){
                     cv::convertScaleAbs(dst,abs_dst);
                     cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
                     QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
-                    this->setImage(dest);
+                    this->setImage(dest.copy());
                     break;
                 }
 
@@ -102,7 +121,7 @@ void FilterImage::executeFiltering(){
                 cv::convertScaleAbs(dst,abs_dst);
                 cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
                 QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
-                this->setImage(dest);
+                this->setImage(dest.copy());
                  break;
                 }
         case 3: {
@@ -110,7 +129,7 @@ void FilterImage::executeFiltering(){
                 cv::convertScaleAbs(dst,abs_dst);
                 cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
                 QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
-                this->setImage(dest);
+                this->setImage(dest.copy());
                  break;
                 }
     }

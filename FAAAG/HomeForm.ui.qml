@@ -1,16 +1,28 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import QtQuick.Dialogs 1.0
 import Filters 1.0
+
 Page {
 
     visible: true
     width: 1920
     height: 1080
+    property alias loadButton: loadButton
     property alias comboBox1: comboBox1
     property alias comboBox: comboBox
     property alias imageItem: imageItem
+    property alias fileDialog: fileDialog
     title: "Welcome to the filter chooser"
     transformOrigin: Item.Top
+
+    FileDialog {
+        id: fileDialog
+        title: "Please choose a file"
+        folder: shortcuts.home
+        nameFilters: ["Image files (*.jpg *.png,*.jpeg,*.tiff)", "All files (*)"]
+        Component.onCompleted: visible = false
+    }
 
     Label {
         width: 356
@@ -21,19 +33,23 @@ Page {
         anchors.centerIn: parent
     }
 
-    Button{
+    Button {
         id: loadButton
+        x: 74
+        y: 60
+        width: 135
+        height: 40
         text: "load image"
     }
 
     ImageItem {
         id: imageItem
-        x: 220
-        y: 200
-        width: parent.width
-        height: parent.height
+        x: comboBox.x + 100 + comboBox.width
+        y: comboBox.y
+        width: 500
+        height: 500
         visible: true
-        anchors.fill: parent
+        //anchors.fill: parent
     }
 
     ComboBox {
@@ -80,9 +96,3 @@ Page {
         y: 217
     }
 }
-
-/*##^##
-Designer {
-    D{i:0;autoSize:true;height:480;width:640}
-}
-##^##*/
