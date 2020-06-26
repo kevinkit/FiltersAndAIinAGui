@@ -27,6 +27,7 @@ class FilterImage : public QQuickPaintedItem
     Q_PROPERTY(QString currentFilter READ currentFilter WRITE setFilter NOTIFY filterChanged)
     Q_PROPERTY(QImage image READ image WRITE setImage NOTIFY imageChanged)
     Q_PROPERTY(int index READ currentIndex WRITE setIndex NOTIFY indexChanged)
+    Q_PROPERTY(int representation READ currentRepresentation WRITE setRepresentation NOTIFY representationChanged)
 
 public:
     explicit FilterImage(QQuickItem *parent = nullptr);
@@ -34,36 +35,48 @@ public:
     //TODO: should maybe put into slots? not sure atm
     Q_INVOKABLE void setImage(const QImage &image);
     Q_INVOKABLE void paint(QPainter *painter) override;
-
+    Q_INVOKABLE void setRepresentation(int idx);
+    
     QImage image() const;
     QString currentFilter();
 
     int currentIndex();
+    int currentRepresentation();
+
     Q_INVOKABLE void executeFiltering();
+    Q_INVOKABLE void executeRepresentationSwitch();
 
 public slots:
     void setFilter(const QString &currentFilter);
     void setIndex(int idx);
     void updateImage(const QString filename);
-
+    
+    
 signals:
     void filterChanged();
     void imageChanged();
     void indexChanged();
+    void representationChanged();
 private:
 
+    int m_currentFilterIndx;
+    int m_currentRepresentation;
 
     QString filename;
-    //QImage no_image;
+    QString m_currentFilter;
+
+    QImage current_image;
+    QImage current_image_gray;
+    QImage current_image_fft;
     QImage orig_image;
 
-    QString m_currentFilter;
-    int m_currentFilterIndx;
-    QImage current_image;
 
     cv::Mat current_cv_image;
     cv::Mat current_cv_image_gray;
+    cv::Mat current_cv_Image_fft;
     cv::Mat orig_image_cv;
+
+
 };
 
 #endif // FILTERIMAGE_H

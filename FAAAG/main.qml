@@ -73,7 +73,10 @@ ApplicationWindow {
                                 imageItem.index = comboBox.currentIndex
                                 //imageItem.executeFiltering()
         }
-
+        comboBox1.onActivated: {
+                                imageItem.representation = comboBox1.currentIndex
+                                //imageItem.executeFiltering()
+        }
         fileDialog.onAccepted: {
             console.log("You chose: " + fileDialog.fileUrls)
             //Qt.quit()

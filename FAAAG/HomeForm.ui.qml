@@ -44,10 +44,10 @@ Page {
 
     ImageItem {
         id: imageItem
-        x: comboBox.x + 100 + comboBox.width
+        x: comboBox.x + comboBox.width
         y: comboBox.y
-        width: 500
-        height: 500
+        width: parent.width - 300
+        height: parent.height - 300
         visible: true
         //anchors.fill: parent
     }
@@ -76,11 +76,11 @@ Page {
                 value: 0
             }
             ListElement {
-                filter: "Sobel on Grayscale"
+                filter: "Sobel"
                 value: 1
             }
             ListElement {
-                filter: "Gaussian Blur on Grayscale"
+                filter: "Gaussian Blur"
                 value: 2
             }
             ListElement {
@@ -92,7 +92,41 @@ Page {
 
     ComboBox {
         id: comboBox1
+        currentIndex: 0
         x: 74
-        y: 217
+        y: 265
+        clip: false
+        flat: false
+        font.family: "Arial"
+        focusPolicy: Qt.TabFocus
+        enabled: true
+        rotation: 0
+        wheelEnabled: true
+        editable: false
+        textRole: "filter"
+        model: ListModel {
+            id: applyChooser
+            ListElement {
+                filter: "RGB"
+                value: 0
+            }
+            ListElement {
+                filter: "Grayscale"
+                value: 1
+            }
+            ListElement {
+                filter: "DFT Magnitude"
+                value: 2
+            }
+        }
+    }
+
+    Label {
+        width: 356
+        height: 44
+        text: qsTr("Choose a representation")
+        anchors.verticalCenterOffset: -288
+        anchors.horizontalCenterOffset: -708
+        anchors.centerIn: parent
     }
 }
