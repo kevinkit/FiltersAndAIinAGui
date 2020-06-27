@@ -27,7 +27,7 @@ class FilterImage : public QQuickPaintedItem
     Q_PROPERTY(QString currentFilter READ currentFilter WRITE setFilter NOTIFY filterChanged)
     Q_PROPERTY(QImage image READ image WRITE setImage NOTIFY imageChanged)
     Q_PROPERTY(int index READ currentIndex WRITE setIndex NOTIFY indexChanged)
-    Q_PROPERTY(int representation READ currentRepresentation WRITE setRepresentation NOTIFY representationChanged)
+   Q_PROPERTY(int representation READ currentRepresentation WRITE setRepresentation NOTIFY representationChanged)
 
 public:
     explicit FilterImage(QQuickItem *parent = nullptr);
@@ -41,10 +41,11 @@ public:
     QString currentFilter();
 
     int currentIndex();
+
     int currentRepresentation();
 
     Q_INVOKABLE void executeFiltering();
-    Q_INVOKABLE void executeRepresentationSwitch();
+  //  Q_INVOKABLE void executeRepresentationSwitch();
 
 public slots:
     void setFilter(const QString &currentFilter);

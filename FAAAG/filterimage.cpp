@@ -105,7 +105,7 @@ void FilterImage::setRepresentation(int idx)
     if (this->m_currentRepresentation == idx)
         return;
     this->m_currentRepresentation = idx;
-    executeRepresentationSwitch();
+    this->executeFiltering();
     update();
     emit imageChanged();
 
@@ -365,9 +365,3 @@ void FilterImage::executeFiltering(){
 
 }
 
-//TODO: remove function
-void FilterImage::executeRepresentationSwitch()
-{
-    qDebug() << "would change now!" << this->m_currentRepresentation;
-    this->executeFiltering();
-}

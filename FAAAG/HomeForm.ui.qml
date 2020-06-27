@@ -33,6 +33,12 @@ Page {
         anchors.centerIn: parent
     }
 
+    CheckBox{
+        x: 74
+        y: 339
+
+    }
+
     Button {
         id: loadButton
         x: 74
@@ -129,4 +135,19 @@ Page {
         anchors.horizontalCenterOffset: -708
         anchors.centerIn: parent
     }
+
+    Label {
+        width: 356
+        height: 44
+        text: qsTr("Live Camera")
+        anchors.verticalCenterOffset: -166
+        anchors.centerIn: parent
+        anchors.horizontalCenterOffset: -656
+    }
 }
+
+/*##^##
+Designer {
+    D{i:0;formeditorZoom:1.25}
+}
+##^##*/
