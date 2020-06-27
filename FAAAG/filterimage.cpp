@@ -71,8 +71,7 @@ FilterImage::FilterImage(QQuickItem *parent) : QQuickPaintedItem(parent)
 
     this->m_currentFilterIndx = 0;
 
-    this->timer = new QTimer(this);
-    connect(timer,SIGNAL(timer.timeout()),this,SLOT(frameGrabber()));
+
 }
 
 void FilterImage::setliveview(bool liveview)
@@ -86,7 +85,9 @@ void FilterImage::setliveview(bool liveview)
         this->cam = cv::VideoCapture(0);
         qDebug() << "trying to open the camera!";
         //timer->start(30);
-        QTimer::singleShot(30, this, SLOT(frameGrabber()));
+        this->timer = new QTimer(this);
+        connect(timer,SIGNAL(timeout()),this,SLOT(frameGrabber()));
+        timer->start(30);
     }else{
         this->cam.release();
         timer->stop();
@@ -300,7 +301,7 @@ void FilterImage::frameGrabber()
     this->cam.read(frame);
 
     if(frame.empty()){
-        QTimer::singleShot(30, this, SLOT(frameGrabber()));
+       // QTimer::singleShot(30, this, SLOT(frameGrabber()));
         return;
     }else{
         QImage dest((const uchar *) frame.data, frame.cols, frame.rows, frame.step, QImage::Format_BGR888);
@@ -308,7 +309,7 @@ void FilterImage::frameGrabber()
         this->setImage(dest);
     }
 
-    QTimer::singleShot(30, this, SLOT(frameGrabber()));
+  //  QTimer::singleShot(30, this, SLOT(frameGrabber()));
 }
 
 
