@@ -52,10 +52,10 @@ Page {
 
     ImageItem {
         id: imageItem
-        x: comboBox.x + comboBox.width
+        x: comboBox.x + comboBox.width + 20
         y: comboBox.y
-        width: parent.width - 300
-        height: parent.height - 300
+        width: parent.width*0.8
+        height: parent.height*0.8
         visible: true
         //anchors.fill: parent
     }

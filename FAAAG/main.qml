@@ -17,7 +17,6 @@ ApplicationWindow {
         anchors.fill: parent
     }
 
-
     header: ToolBar {
 
         Label {
@@ -41,6 +40,10 @@ ApplicationWindow {
                                 //comboBox.currentIndex = 0
         }
 
+        checkBox.onClicked: {
+            console.log("changed!")
+            imageItem.setliveview(checkBox.checkState)
+        }
 
         fileDialog.onAccepted: {
             console.log("You chose: " + fileDialog.fileUrls)

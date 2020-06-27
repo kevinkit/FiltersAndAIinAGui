@@ -70,6 +70,42 @@ FilterImage::FilterImage(QQuickItem *parent) : QQuickPaintedItem(parent)
     this->current_image_fft = dest.copy();
 
     this->m_currentFilterIndx = 0;
+
+    this->timer = new QTimer(this);
+    connect(timer,SIGNAL(timer.timeout()),this,SLOT(frameGrabber()));
+}
+
+void FilterImage::setliveview(bool liveview)
+{
+    if (m_liveview == liveview)
+        return;
+    qDebug() << "setting live view!" << liveview;
+    m_liveview = liveview;
+
+    if(liveview==true){
+        this->cam = cv::VideoCapture(0);
+        qDebug() << "trying to open the camera!";
+        //timer->start(30);
+        QTimer::singleShot(30, this, SLOT(frameGrabber()));
+    }else{
+        this->cam.release();
+        timer->stop();
+    }
+
+    emit liveviewChanged(m_liveview);
+}
+
+
+
+
+FilterImage::~FilterImage()
+{
+    //trying to close the camera
+    try {
+        this->cam.release();
+    } catch (const std::exception& e) {
+
+    }
 }
 
 /*!
@@ -127,7 +163,7 @@ QImage FilterImage::image() const
  */
 void FilterImage::setImage(const QImage &image)
 {
-    this->current_image = image.copy();
+    this->current_image = image.copy().scaled(4096,2160,Qt::KeepAspectRatio);
    // QImage gray = image.convertToFormat(QImage::Format_Grayscale8);
    // this->current_image_gray = gray.copy();
     update();
@@ -221,6 +257,7 @@ void FilterImage::updateImage(const QString filename)
     cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
     QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
     this->current_image_fft = dest.copy();
+
     this->setFilter("No Filter");
     this->setIndex(0);
     this->setRepresentation(0);
@@ -255,13 +292,30 @@ void FilterImage::setRepresentationName(QString representationName)
     emit representationNameChanged(m_representationName);
 }
 
+void FilterImage::frameGrabber()
+{
+    //frame to be grabbed here
+    qDebug() << "hi!";
+    cv::Mat frame;
+    this->cam.read(frame);
 
+    if(frame.empty()){
+        QTimer::singleShot(30, this, SLOT(frameGrabber()));
+        return;
+    }else{
+        QImage dest((const uchar *) frame.data, frame.cols, frame.rows, frame.step, QImage::Format_BGR888);
+
+        this->setImage(dest);
+    }
+
+    QTimer::singleShot(30, this, SLOT(frameGrabber()));
+}
 
 
 /*!
     @brief Function for executiing the used filter on it
 */
-void FilterImage::executeFiltering(){
+QImage FilterImage::executeFiltering(){
 
     qDebug() << this->m_currentFilterIndx;
     cv::Mat src_gray,dst,abs_dst,temp;
@@ -269,16 +323,16 @@ void FilterImage::executeFiltering(){
     switch(this->m_currentFilterIndx){
         case 0: {
              switch(this->m_currentRepresentation){
-                case 0: this->setImage(this->orig_image); break;
-                case 1: this->setImage(this->current_image_gray); break;
-                case 2: this->setImage(this->current_image_fft); break;
-                default : this->setImage(this->orig_image); break;
+                case 0: this->setImage(this->orig_image); return this->orig_image;
+                case 1: this->setImage(this->current_image_gray); return this->current_image_gray;
+                case 2: this->setImage(this->current_image_fft); return this->current_image_fft;
+                default : this->setImage(this->orig_image); return this->orig_image;
 
              }
              break;
         }
 
-        this->setImage(this->orig_image); return;
+        this->setImage(this->orig_image); return this->orig_image;
         case 1: {
                     //switch according to representation
                     switch(this->m_currentRepresentation){
@@ -376,9 +430,9 @@ void FilterImage::executeFiltering(){
                     break;
                 }
 
-         default: this->setImage(this->orig_image); return;
+         default: this->setImage(this->orig_image); return this->orig_image;
     }
-
+    return this->current_image;
 
 }
 

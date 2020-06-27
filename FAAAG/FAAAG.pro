@@ -21,6 +21,7 @@ LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_imgcodecs411.dll
 LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_imgproc411.dll
 LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_features2d411.dll
 LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_calib3d411.dll
+LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_videoio411.dll
 
 SOURCES += \
         filterimage.cpp \
