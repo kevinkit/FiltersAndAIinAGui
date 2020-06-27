@@ -1,5 +1,5 @@
 QT += quick core gui \
-    widgets
+    widgets quickcontrols2
 
 CONFIG += c++11
 

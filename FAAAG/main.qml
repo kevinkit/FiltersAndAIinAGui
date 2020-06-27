@@ -9,6 +9,15 @@ ApplicationWindow {
     height: 1080
     title: qsTr("Stack")
 
+    StackView {
+        id: stackView
+        width: 1920
+        height: 1080
+        initialItem: "HomeForm.ui.qml"
+        anchors.fill: parent
+    }
+
+
     header: ToolBar {
         contentHeight: toolButton.implicitHeight
 
@@ -33,7 +42,7 @@ ApplicationWindow {
 
     Drawer {
         id: drawer
-        width: window.width * 0.66
+        width: window.width * 0.2
         height: window.height
 
         Column {
@@ -43,6 +52,7 @@ ApplicationWindow {
                 text: qsTr("Live View")
                 width: parent.width
                 onClicked: {
+                    console.log("you pushed....")
                     stackView.push("Page1Form.ui.qml")
                     drawer.close()
                 }
@@ -59,13 +69,7 @@ ApplicationWindow {
     }
 
 
-    StackView {
-        id: stackView
-        width: 1920
-        height: 1080
-        initialItem: "HomeForm.ui.qml"
-        anchors.fill: parent
-    }
+
 
 
     HomeForm{
@@ -76,6 +80,9 @@ ApplicationWindow {
         comboBox1.onActivated: {
                                 imageItem.representation = comboBox1.currentIndex
 
+                                //if the representation is changed the filter is reset
+                               //comboBox.currentText = "No filter"
+                                //comboBox.currentIndex = 0
         }
 
 
@@ -84,8 +91,12 @@ ApplicationWindow {
             imageItem.updateImage(fileDialog.fileUrls)
             comboBox1.currentIndex = 0
             imageItem.index = 0
+
             comboBox1.currentText = "RGB"
             imageItem.currentFilter = "RGB"
+
+            comboBox.currentText = "No filter"
+            comboBox.currentIndex = 0
         }
         fileDialog.onRejected: {
             console.log("Canceled")

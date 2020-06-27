@@ -62,7 +62,7 @@ FilterImage::FilterImage(QQuickItem *parent) : QQuickPaintedItem(parent)
     cv::normalize(mag, mag, 0, 1, cv::NORM_MINMAX); // Transform the matrix with float values into a
                                                       // viewable image form (float between values 0 and 1).
 
-    complex.copyTo(this->current_cv_Image_fft);
+    mag.copyTo(this->current_cv_Image_fft);
 
     cv::convertScaleAbs(255*mag,abs_dst);
     cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
@@ -212,7 +212,7 @@ void FilterImage::updateImage(const QString filename)
     cv::normalize(mag, mag, 0, 1, cv::NORM_MINMAX); // Transform the matrix with float values into a
                                                       // viewable image form (float between values 0 and 1).
 
-    complex.copyTo(this->current_cv_Image_fft);
+    mag.copyTo(this->current_cv_Image_fft);
 
     cv::convertScaleAbs(255*mag,abs_dst);
     cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
@@ -250,42 +250,124 @@ void FilterImage::executeFiltering(){
     cv::Mat src_gray,dst,abs_dst,temp;
 
     switch(this->m_currentFilterIndx){
-        case 0: this->setImage(this->orig_image); break;
+        case 0: {
+             switch(this->m_currentRepresentation){
+                case 0: this->setImage(this->orig_image); break;
+                case 1: this->setImage(this->current_image_gray); break;
+                case 2: this->setImage(this->current_image_fft); break;
+                default : this->setImage(this->orig_image); break;
+
+             }
+             break;
+        }
+
+        this->setImage(this->orig_image); return;
         case 1: {
-                    cv::Sobel(this->current_cv_image_gray,dst,CV_16S,0,1,3,cv::BORDER_DEFAULT);
-                    cv::convertScaleAbs(dst,abs_dst);
-                    cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
-                    QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
-                    this->setImage(dest.copy());
+                    //switch according to representation
+                    switch(this->m_currentRepresentation){
+                    case 0:{
+                        cv::Sobel(this->current_cv_image,dst,CV_16S,0,1,3,cv::BORDER_DEFAULT);
+                        cv::convertScaleAbs(dst,abs_dst);
+                        cv::cvtColor(abs_dst,temp,cv::COLOR_RGB2BGR);
+                        QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
+                        this->setImage(dest.copy());
+                        break;
+                    }
+                    case 1:{
+                        cv::Sobel(this->current_cv_image_gray,dst,CV_16S,0,1,3,cv::BORDER_DEFAULT);
+                        cv::convertScaleAbs(dst,abs_dst);
+                        cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
+                        QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
+                        this->setImage(dest.copy());
+                        break;
+                        }
+                    case 2:{
+                        cv::Sobel(255*this->current_cv_Image_fft,dst,CV_16S,0,1,3,cv::BORDER_DEFAULT);
+                        cv::convertScaleAbs(dst,abs_dst);
+                        cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
+                        QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
+                        this->setImage(dest.copy());
+                        break;
+                        }
+
+                    }
                     break;
                 }
         case 2:{
-                cv::GaussianBlur(this->current_cv_image_gray,dst,cv::Size(3,3),0,0);
-                cv::convertScaleAbs(dst,abs_dst);
-                cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
-                QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
-                this->setImage(dest.copy());
-                 break;
+                    //switch according to representation
+                    switch(this->m_currentRepresentation){
+                    case 0:{
+                        cv::GaussianBlur(this->current_cv_image,dst,cv::Size(3,3),0,0);
+                        cv::convertScaleAbs(dst,abs_dst);
+                        cv::cvtColor(abs_dst,temp,cv::COLOR_RGB2BGR);
+                        QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
+                        this->setImage(dest.copy());
+                        break;
+                    }
+                    case 1:{
+                        cv::GaussianBlur(this->current_cv_image_gray,dst,cv::Size(3,3),0,0);
+                        cv::convertScaleAbs(dst,abs_dst);
+                        cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
+                        QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
+                        this->setImage(dest.copy());
+                        break;
+                        }
+                    case 2:{
+                        cv::GaussianBlur(255*this->current_cv_Image_fft,dst,cv::Size(3,3),0,0);
+                        cv::convertScaleAbs(dst,abs_dst);
+                        cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
+                        QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
+                        this->setImage(dest.copy());
+                        break;
+                        }
+
+                    }
+                    break;
                 }
-        case 3: {
-                cv::medianBlur(this->current_cv_image_gray,dst,3);
-                cv::convertScaleAbs(dst,abs_dst);
-                cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
-                QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
-                this->setImage(dest.copy());
-                 break;
+
+
+        case 3:{
+
+                    //switch according to representation
+                    switch(this->m_currentRepresentation){
+                    case 0:{
+                        cv::medianBlur(this->current_cv_image,dst,3);
+                        cv::convertScaleAbs(dst,abs_dst);
+                        cv::cvtColor(abs_dst,temp,cv::COLOR_RGB2BGR);
+                        QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
+                        this->setImage(dest.copy());
+                        break;
+                    }
+                    case 1:{
+                        cv::medianBlur(this->current_cv_image_gray,dst,3);
+                        cv::convertScaleAbs(dst,abs_dst);
+                        cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
+                        QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
+                        this->setImage(dest.copy());
+                        break;
+                        }
+                    case 2:{
+                        cv::medianBlur(255*this->current_cv_Image_fft,dst,3);
+                        cv::convertScaleAbs(dst,abs_dst);
+                        cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
+                        QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
+                        this->setImage(dest.copy());
+                        break;
+                        }
+
+                    }
+                    break;
                 }
-        default: this->setImage(this->orig_image); break;
+
+         default: this->setImage(this->orig_image); return;
     }
+
+
 }
 
+//TODO: remove function
 void FilterImage::executeRepresentationSwitch()
 {
     qDebug() << "would change now!" << this->m_currentRepresentation;
-    switch(this->m_currentRepresentation){
-        case 0: this->setImage(this->orig_image); qDebug() << "set rgb" ;break;
-        case 1: this->setImage(this->current_image_gray); qDebug() << "set gray" ;break;
-        case 2: this->setImage(this->current_image_fft); qDebug() << "set fft" ;break;
-        default: this->setImage(this->orig_image);break;
-    }
+    this->executeFiltering();
 }
