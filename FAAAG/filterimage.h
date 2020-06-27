@@ -25,6 +25,7 @@ class FilterImage : public QQuickPaintedItem
 {
     Q_OBJECT
     Q_PROPERTY(QString currentFilter READ currentFilter WRITE setFilter NOTIFY filterChanged)
+    Q_PROPERTY(QString representationName READ representationName WRITE setRepresentationName NOTIFY representationNameChanged)
     Q_PROPERTY(QImage image READ image WRITE setImage NOTIFY imageChanged)
     Q_PROPERTY(int index READ currentIndex WRITE setIndex NOTIFY indexChanged)
    Q_PROPERTY(int representation READ currentRepresentation WRITE setRepresentation NOTIFY representationChanged)
@@ -39,7 +40,7 @@ public:
     
     QImage image() const;
     QString currentFilter();
-
+    QString representationName() const;
     int currentIndex();
 
     int currentRepresentation();
@@ -47,17 +48,22 @@ public:
     Q_INVOKABLE void executeFiltering();
   //  Q_INVOKABLE void executeRepresentationSwitch();
 
+
+
 public slots:
     void setFilter(const QString &currentFilter);
     void setIndex(int idx);
     void updateImage(const QString filename);
-    
-    
+        
+    void setRepresentationName(QString representationName);
+
 signals:
-    void filterChanged();
+    void filterChanged(QString currentFilter);
     void imageChanged();
     void indexChanged();
     void representationChanged();
+    void representationNameChanged(QString representationName);
+
 private:
 
     int m_currentFilterIndx;
@@ -78,6 +84,7 @@ private:
     cv::Mat orig_image_cv;
 
 
+    QString m_representationName;
 };
 
 #endif // FILTERIMAGE_H

@@ -19,7 +19,6 @@ ApplicationWindow {
 
 
     header: ToolBar {
-        contentHeight: toolButton.implicitHeight
 
         Label {
             text: stackView.currentItem.title
@@ -32,11 +31,12 @@ ApplicationWindow {
         comboBox.onActivated: { imageItem.currentFilter = comboBox.currentText
                                 imageItem.index = comboBox.currentIndex
                                 //imageItem.executeFiltering()
+
+
         }
         comboBox1.onActivated: {
                                 imageItem.representation = comboBox1.currentIndex
-
-                                //if the representation is changed the filter is reset
+                               //if the representation is changed the filter is reset
                                //comboBox.currentText = "No filter"
                                 //comboBox.currentIndex = 0
         }
@@ -46,13 +46,8 @@ ApplicationWindow {
             console.log("You chose: " + fileDialog.fileUrls)
             imageItem.updateImage(fileDialog.fileUrls)
             comboBox1.currentIndex = 0
-            imageItem.index = 0
-
-            comboBox1.currentText = "RGB"
-            imageItem.currentFilter = "RGB"
-
-            comboBox.currentText = "No filter"
             comboBox.currentIndex = 0
+            imageItem.index = 0
         }
         fileDialog.onRejected: {
             console.log("Canceled")

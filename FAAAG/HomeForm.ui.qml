@@ -8,6 +8,7 @@ Page {
     visible: true
     width: 1920
     height: 1080
+    property alias checkBox: checkBox
     property alias loadButton: loadButton
     property alias comboBox1: comboBox1
     property alias comboBox: comboBox
@@ -34,6 +35,7 @@ Page {
     }
 
     CheckBox{
+        id: checkBox
         x: 74
         y: 339
 
@@ -108,20 +110,22 @@ Page {
         enabled: true
         rotation: 0
         wheelEnabled: true
+
         editable: false
-        textRole: "filter"
+        textRole: "representation"
+
         model: ListModel {
             id: applyChooser
             ListElement {
-                filter: "RGB"
+                representation: "RGB"
                 value: 0
             }
             ListElement {
-                filter: "Grayscale"
+                representation: "Grayscale"
                 value: 1
             }
             ListElement {
-                filter: "DFT Magnitude"
+                representation: "DFT Magnitude"
                 value: 2
             }
         }

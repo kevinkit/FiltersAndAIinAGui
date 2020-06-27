@@ -69,7 +69,6 @@ FilterImage::FilterImage(QQuickItem *parent) : QQuickPaintedItem(parent)
     QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
     this->current_image_fft = dest.copy();
 
-    qDebug() << mag.channels();
     this->m_currentFilterIndx = 0;
 }
 
@@ -145,6 +144,12 @@ int FilterImage::currentRepresentation()
     return this->m_currentRepresentation;
 }
 
+
+QString FilterImage::representationName() const
+{
+    return this->m_representationName;
+}
+
 void FilterImage::setIndex(int idx)
 {
     qDebug() << "in in dex";
@@ -208,20 +213,21 @@ void FilterImage::updateImage(const QString filename)
     q2.copyTo(q1);
     tmp.copyTo(q2);
 
-
     cv::normalize(mag, mag, 0, 1, cv::NORM_MINMAX); // Transform the matrix with float values into a
                                                       // viewable image form (float between values 0 and 1).
-
     mag.copyTo(this->current_cv_Image_fft);
 
     cv::convertScaleAbs(255*mag,abs_dst);
     cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
     QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
     this->current_image_fft = dest.copy();
-
+    this->setFilter("No Filter");
+    this->setIndex(0);
+    this->setRepresentation(0);
+    this->setRepresentationName("RGB");
     //set current Image
     this->setImage(new_image.copy());
-
+    this->executeFiltering();
 }
 
 
@@ -236,9 +242,20 @@ void FilterImage::setFilter(const QString &currentFilter)
 
     this->m_currentFilter = currentFilter;
     this->executeFiltering();
-    emit filterChanged();
+    emit filterChanged(currentFilter);
 
 }
+
+void FilterImage::setRepresentationName(QString representationName)
+{
+    if (m_representationName == representationName)
+        return;
+
+    m_representationName = representationName;
+    emit representationNameChanged(m_representationName);
+}
+
+
 
 
 /*!
