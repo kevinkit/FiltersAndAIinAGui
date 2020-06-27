@@ -75,12 +75,17 @@ ApplicationWindow {
         }
         comboBox1.onActivated: {
                                 imageItem.representation = comboBox1.currentIndex
-                                //imageItem.executeFiltering()
+
         }
+
+
         fileDialog.onAccepted: {
             console.log("You chose: " + fileDialog.fileUrls)
-            //Qt.quit()
             imageItem.updateImage(fileDialog.fileUrls)
+            comboBox1.currentIndex = 0
+            imageItem.index = 0
+            comboBox1.currentText = "RGB"
+            imageItem.currentFilter = "RGB"
         }
         fileDialog.onRejected: {
             console.log("Canceled")

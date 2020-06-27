@@ -25,7 +25,7 @@ FilterImage::FilterImage(QQuickItem *parent) : QQuickPaintedItem(parent)
     int m = cv::getOptimalDFTSize(gray.rows);
     int n = cv::getOptimalDFTSize(gray.cols);
 
-    cv::copyMakeBorder(gray,padded,0,m-gray.rows,0,n-gray.rows,cv::BORDER_CONSTANT,cv::Scalar::all(0));
+    cv::copyMakeBorder(gray,padded,0,m-gray.rows,0,n-gray.cols,cv::BORDER_CONSTANT,cv::Scalar::all(0));
     cv::Mat planes[] = {cv::Mat_<float>(padded),cv::Mat::zeros(padded.size(),CV_32F)};
     cv::merge(planes,2,complex);
 
@@ -129,8 +129,8 @@ QImage FilterImage::image() const
 void FilterImage::setImage(const QImage &image)
 {
     this->current_image = image.copy();
-    QImage gray = image.convertToFormat(QImage::Format_Grayscale8);
-    this->current_image_gray = gray.copy();
+   // QImage gray = image.convertToFormat(QImage::Format_Grayscale8);
+   // this->current_image_gray = gray.copy();
     update();
     emit imageChanged();
 }
@@ -160,12 +160,66 @@ void FilterImage::updateImage(const QString filename)
     QString adapted = filename.mid(8);
     QImageReader reader(adapted);
     QImage new_image = reader.read();
-    this->current_cv_image = cv::imread(adapted.toUtf8().constData());
-    cv::cvtColor(this->current_cv_image,this->current_cv_image_gray,cv::COLOR_BGR2GRAY);
-    //must be written here, otherwise it is not "overwritten"
+
+    //RGB
     this->orig_image = new_image;
+
+    this->current_cv_image = cv::imread(adapted.toUtf8().constData());
+
+    //Gray Image
+    cv::cvtColor(this->current_cv_image,this->current_cv_image_gray,cv::COLOR_BGR2GRAY);
     QImage gray = new_image.convertToFormat(QImage::Format_Grayscale8);
     this->current_image_gray = gray.copy();
+
+    //DFT
+    cv::Mat padded,complex,tmp,abs_dst,temp;
+    int m = cv::getOptimalDFTSize(this->current_cv_image_gray.rows);
+    int n = cv::getOptimalDFTSize(this->current_cv_image_gray.cols);
+    cv::copyMakeBorder(this->current_cv_image_gray,padded,0,m-this->current_cv_image_gray.rows,0,n-this->current_cv_image_gray.cols,cv::BORDER_CONSTANT,cv::Scalar::all(0));
+    cv::Mat planes[] = {cv::Mat_<float>(padded),cv::Mat::zeros(padded.size(),CV_32F)};
+    cv::merge(planes,2,complex);
+
+    cv::dft(complex, complex);
+
+    cv::split(complex, planes);                   // planes[0] = Re(DFT(I), planes[1] = Im(DFT(I))
+    cv::magnitude(planes[0], planes[1], planes[0]);// planes[0] = magnitude
+    cv::Mat mag = planes[0];
+
+    //going to a log scale
+    mag += cv::Scalar::all(1);
+    cv::log(mag,mag);
+
+    // crop the spectrum, if it has an odd number of rows or columns
+    mag = mag(cv::Rect(0, 0, mag.cols & -2, mag.rows & -2));
+
+    // rearrange the quadrants of Fourier image  so that the origin is at the image center
+    int cx = mag.cols/2;
+    int cy = mag.rows/2;
+    cv::Mat q0(mag, cv::Rect(0, 0, cx, cy));   // Top-Left - Create a ROI per quadrant
+    cv::Mat q1(mag, cv::Rect(cx, 0, cx, cy));  // Top-Right
+    cv::Mat q2(mag, cv::Rect(0, cy, cx, cy));  // Bottom-Left
+    cv::Mat q3(mag, cv::Rect(cx, cy, cx, cy)); // Bottom-Right
+
+    q0.copyTo(tmp);                     // swap quadrants (Top-Left with Bottom-Right)
+    q3.copyTo(q0);
+    tmp.copyTo(q3);
+
+    q1.copyTo(tmp);                    // swap quadrant (Top-Right with Bottom-Left)
+    q2.copyTo(q1);
+    tmp.copyTo(q2);
+
+
+    cv::normalize(mag, mag, 0, 1, cv::NORM_MINMAX); // Transform the matrix with float values into a
+                                                      // viewable image form (float between values 0 and 1).
+
+    complex.copyTo(this->current_cv_Image_fft);
+
+    cv::convertScaleAbs(255*mag,abs_dst);
+    cvtColor(abs_dst, temp,cv::COLOR_GRAY2RGB);
+    QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
+    this->current_image_fft = dest.copy();
+
+    //set current Image
     this->setImage(new_image.copy());
 
 }
@@ -227,11 +281,11 @@ void FilterImage::executeFiltering(){
 
 void FilterImage::executeRepresentationSwitch()
 {
-    qDebug() << "would change now!";
+    qDebug() << "would change now!" << this->m_currentRepresentation;
     switch(this->m_currentRepresentation){
-        case 0: this->setImage(this->orig_image); break;
-        case 1: this->setImage(this->current_image_gray); break;
-        case 2: this->setImage(this->current_image_fft); break;
+        case 0: this->setImage(this->orig_image); qDebug() << "set rgb" ;break;
+        case 1: this->setImage(this->current_image_gray); qDebug() << "set gray" ;break;
+        case 2: this->setImage(this->current_image_fft); qDebug() << "set fft" ;break;
         default: this->setImage(this->orig_image);break;
     }
 }
