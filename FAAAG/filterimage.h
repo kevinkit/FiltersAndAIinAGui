@@ -51,11 +51,12 @@ public:
 
     int currentRepresentation();
 
-    Q_INVOKABLE QImage executeFiltering();
+    Q_INVOKABLE void executeFiltering();
 
     QTimer *timer;
 
-
+    cv::Mat doFilteringOnImage(cv::Mat &frame);
+    cv::Mat fourierMagnitude(cv::Mat &frame);
     bool liveview() const
     {
         return m_liveview;
