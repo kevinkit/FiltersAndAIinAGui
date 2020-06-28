@@ -1,11 +1,11 @@
 #include "filterimage.h"
 #include <QFileInfo>
-
+#include <QProcess>
 /*!
  * \brief FilterImage::FilterImage
  * \param parent
  */
-FilterImage::FilterImage(QQuickItem *parent) : QQuickPaintedItem(parent)
+FilterImage::FilterImage(QQuickItem *parent) : QQuickPaintedItem(parent), shared_image("image"),shared_start_dl("compute")
 {
     QImage qimg = QImage("file:/../../1.png");
     this->current_image = qimg;
@@ -71,27 +71,55 @@ FilterImage::FilterImage(QQuickItem *parent) : QQuickPaintedItem(parent)
 
     this->m_currentFilterIndx = 0;
 
+    //all images are going to in this size when they are fed into the qshared memory
+    this->shared_image.detach();
+    if(!this->shared_image.create(224*224*3)){
+        qDebug() << "could not create qshared memory!";
+    }else{
+    qDebug() << "created shared!";
 
+    QImage scaled = this->current_image.scaled(QSize(224,224)).convertToFormat(QImage::Format_RGB888);
+
+    char* to = (char*) this->shared_image.data();
+    const unsigned char *from = (unsigned char*) scaled.constBits();
+    qDebug() << "before copy";
+    this->shared_image.lock();
+    memcpy(to, from, shared_image.size());
+    this->shared_image.unlock();
+
+    this->shared_start_dl.detach();
+    this->shared_start_dl.create(1);
+    char startvalue = 0;
+    char* toStart = (char*) this->shared_start_dl.data();
+    memcpy(toStart,&startvalue,1);
+    this->shared_start_dl.lock();
+    }
+}
+
+void FilterImage::setSharedMemory(const QImage &frame)
+{
+    QImage scaled = frame.scaled(QSize(224,224)).convertToFormat(QImage::Format_RGB888);
+
+    char* to = (char*) this->shared_image.data();
+    const unsigned char *from = (unsigned char*) scaled.constBits();
+    qDebug() << "before copy";
+    this->shared_image.lock();
+    memcpy(to, from, shared_image.size());
+    this->shared_image.unlock();
 }
 
 
 
 FilterImage::~FilterImage()
 {
+    this->shared_image.unlock();
+
     //trying to close the camera
     try {
         this->cam.release();
     } catch (const std::exception& e) {
 
     }
-}
-
-/*!
- * \brief getter Function for the current filter applied as a string
- */
-QString FilterImage::currentFilter()
-{
-    return this->m_currentFilter;
 }
 
 /*!
@@ -114,17 +142,6 @@ void FilterImage::paint(QPainter *painter)
 }
 
 
-
-
-/*!
- * \brief FilterImage::image Getter function for the current image
- * \return QImage 
- */
-QImage FilterImage::image() const
-{
-    return this->current_image;
-}
-
 /*!
  * \brief FilterImage::setImage Setter function for the image, call with a copy to make sure 
  * that the memory is copied deep. Will call the update function and emit the signal the 
@@ -133,9 +150,10 @@ QImage FilterImage::image() const
  */
 void FilterImage::setImage(const QImage &image)
 {
-    this->current_image = image.copy().scaled(4096,2160,Qt::KeepAspectRatio);
-   // QImage gray = image.convertToFormat(QImage::Format_Grayscale8);
-   // this->current_image_gray = gray.copy();
+    this->current_image = image.copy();
+    this->setSharedMemory(image);
+    qDebug() << image.width() << image.height();
+
     update();
     emit imageChanged();
 }
@@ -150,6 +168,15 @@ void FilterImage::setRepresentation(int idx)
     update();
     emit imageChanged();
 
+}
+
+void FilterImage::setRepresentationName(QString representationName)
+{
+    if (m_representationName == representationName)
+        return;
+
+    m_representationName = representationName;
+    emit representationNameChanged(m_representationName);
 }
 
 void FilterImage::setliveview(bool liveview)
@@ -199,6 +226,30 @@ void FilterImage::setFilter(const QString &currentFilter)
     emit filterChanged(currentFilter);
 
 }
+
+bool FilterImage::liveview() const
+{
+    return this->m_liveview;
+}
+
+
+/*!
+ * \brief FilterImage::image Getter function for the current image
+ * \return QImage
+ */
+QImage FilterImage::image() const
+{
+    return this->current_image;
+}
+
+/*!
+ * \brief getter Function for the current filter applied as a string
+ */
+QString FilterImage::currentFilter()
+{
+    return this->m_currentFilter;
+}
+
 
 int FilterImage::currentIndex()
 {
@@ -280,6 +331,11 @@ void FilterImage::updateImage(const QString filename)
     QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
     this->current_image_fft = dest.copy();
 
+    this->shared_image.detach();
+    if(!this->shared_image.create(new_image.sizeInBytes())){
+        qDebug() << "could not create qshared memory!";
+    }
+
     this->setFilter("No Filter");
     this->setIndex(0);
     this->setRepresentation(0);
@@ -287,18 +343,6 @@ void FilterImage::updateImage(const QString filename)
     //set current Image
     this->setImage(new_image.copy());
     this->executeFiltering();
-}
-
-
-
-
-void FilterImage::setRepresentationName(QString representationName)
-{
-    if (m_representationName == representationName)
-        return;
-
-    m_representationName = representationName;
-    emit representationNameChanged(m_representationName);
 }
 
 void FilterImage::frameGrabber()
@@ -309,12 +353,12 @@ void FilterImage::frameGrabber()
     this->cam.read(frame);
 
     if(frame.empty()){
-       // QTimer::singleShot(30, this, SLOT(frameGrabber()));
         return;
     }else{
 
         cv::Mat adaptedFrame = doFilteringOnImage(frame);
         if(this->m_currentRepresentation == 0){
+
             QImage dest((const uchar *) adaptedFrame.data, adaptedFrame.cols, adaptedFrame.rows, adaptedFrame.step, QImage::Format_BGR888);
             this->setImage(dest);
         }else{
@@ -322,9 +366,8 @@ void FilterImage::frameGrabber()
             this->setImage(dest);
         }
     }
-
-  //  QTimer::singleShot(30, this, SLOT(frameGrabber()));
 }
+
 
 cv::Mat FilterImage::doFilteringOnImage(cv::Mat &frame){
     cv::Mat src_gray,dst,abs_dst,temp;

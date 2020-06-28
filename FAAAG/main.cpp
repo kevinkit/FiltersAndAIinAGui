@@ -4,12 +4,13 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include <tensorflow/c/c_api.h>
+//#include <tensorflow/c/c_api.h>
 #include "filterimage.h"
+
 
 int main(int argc, char *argv[])
 {
-    qDebug() << "hi" << TF_Version();
+
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
 
@@ -26,5 +27,8 @@ int main(int argc, char *argv[])
     }, Qt::QueuedConnection);
 
     engine.load(url);
+
+
+
     return app.exec();
 }

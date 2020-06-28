@@ -18,7 +18,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <QFileDialog>
 #include <QTimer>
-
+#include <QSharedMemory>
 
 /*!
     @brief Filter class for adapint the filters and loading the images
@@ -48,20 +48,16 @@ public:
     QString currentFilter();
     QString representationName() const;
     int currentIndex();
-
+    bool liveview() const;
     int currentRepresentation();
 
     Q_INVOKABLE void executeFiltering();
 
     QTimer *timer;
-
     cv::Mat doFilteringOnImage(cv::Mat &frame);
     cv::Mat fourierMagnitude(cv::Mat &frame);
-    bool liveview() const
-    {
-        return m_liveview;
-    }
-
+    QSharedMemory shared_image;
+    QSharedMemory shared_start_dl;
 public slots:
     void setFilter(const QString &currentFilter);
     void setIndex(int idx);
@@ -105,6 +101,9 @@ private:
 
     bool m_liveview;
 
+    int semaphor = 0;
+
+    void setSharedMemory(const QImage &frame);
 };
 
 #endif // FILTERIMAGE_H

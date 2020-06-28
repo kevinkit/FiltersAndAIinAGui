@@ -8,6 +8,7 @@ Page {
     visible: true
     width: 1920
     height: 1080
+    property alias checkBox1: checkBox1
     property alias checkBox: checkBox
     property alias loadButton: loadButton
     property alias comboBox1: comboBox1
@@ -148,10 +149,26 @@ Page {
         anchors.centerIn: parent
         anchors.horizontalCenterOffset: -656
     }
+
+    CheckBox {
+        id: checkBox1
+        x: 74
+        y: 396
+    }
+
+
+    Label {
+        width: 356
+        height: 44
+        text: qsTr("Use Deep Learning")
+        anchors.centerIn: parent
+        anchors.verticalCenterOffset: -108
+        anchors.horizontalCenterOffset: -656
+    }
 }
 
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:1.25}
+    D{i:0;formeditorZoom:0.75}
 }
 ##^##*/
