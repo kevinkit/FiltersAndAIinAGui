@@ -15,14 +15,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 INCLUDEPATH += G:\mingwOpenCV\mingwOpenCV\include
-#LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_core411.dll
-#LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_highgui411.dll
-#LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_imgcodecs411.dll
-#LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_imgproc411.dll
-#LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_features2d411.dll
-#LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_calib3d411.dll
-#LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\libopencv_videoio411.dll
+INCLUDEPATH += G:\libtensorflow\include
+LIBS += G:\mingwOpenCV\mingwOpenCV\x64\mingw\bin\*.dll
 
+LIBS += G:\libtensorflow\lib\tensorflow.dll
 SOURCES += \
         filterimage.cpp \
         main.cpp
@@ -43,4 +39,3 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     filterimage.h
 
-LIBS += -lcore -lhighgui -limgcodecs -limgproc -lfeatures -lcalib3d -lvideoio
